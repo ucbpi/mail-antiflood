@@ -2,12 +2,14 @@
 
 SOURCE="${BASH_SOURCE[0]}"
 DIR=$(cd $( dirname $SOURCE ) && pwd )
-
-THRESHOLD=0
-NOTIFY=arusso@berkeley.edu
+THRESHOLD=50
+NOTIFY=root
 MESSAGE="Active messages in the mail queue exceeded threshold of ${THRESHOLD}.\n
 These messages have been held to prevent rate-limiting of email accounts, and to be a good mail user.\n
 To review these messages, hop on to $HOSTNAME and review the mailq, thawing or deleting messages as necessary."
+
+# load a config if necessary
+[[ -f "$DIR/antispam.config" ]] && . "$DIR/antispam.config"
 
 ACTIVE_COUNT=$(sh ${DIR}/check_postfix_queue_size.sh | sed 's/:/ /g' | awk '{print $4 }')
 if [ $ACTIVE_COUNT -ge $THRESHOLD ]; then
